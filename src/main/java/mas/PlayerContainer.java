@@ -14,11 +14,12 @@ public class SimpleContainer {
         profile.setParameter(Profile.MAIN_HOST,"localhost");
         AgentContainer agentContainer=runtime.createAgentContainer(profile);
         AgentController mainAgent=null;
+        mainAgent = agentContainer.createNewAgent("master",MasterAgent.class.getName(), new Object[]{4});
+        mainAgent.start();
         for (int i = 0; i< 4; i++){
             mainAgent = agentContainer.createNewAgent("player"+i, PlayerAgent.class.getName(), new Object[]{});
             mainAgent.start();
         }
-        mainAgent = agentContainer.createNewAgent("master",MasterAgent.class.getName(), new Object[]{4});
-        mainAgent.start();
+
     }
 }
