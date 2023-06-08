@@ -8,7 +8,6 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import ma.sdia.sma.sequential.Qlearning;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +33,36 @@ public class MasterAgent extends Agent {
         sequentialBehaviour.addSubBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
-                ACLMessage receiveMessage=receive();
+                ACLMessage receiveMessage=blockingReceive();
                 if(receiveMessage!=null){
                     if(!players.containsKey(receiveMessage.getSender())){
                         players.put(receiveMessage.getSender(),Integer.parseInt(receiveMessage.getContent()));
                     }
                     if(players.size()==(int)getArguments()[0]){
+                        AID winner=null;
+                        int bestResult=1000000;
+                        for (Map.Entry<AID, Integer> p : players.entrySet()) {
+                            int v=p.getValue();
+                            if(v<bestResult){
+                                bestResult=v;
+                                System.out.println("result "+v);
+                                winner=p.getKey();
+                            }
+                        }
+                        System.out.println("****** winner "+winner.getLocalName());
+                        ACLMessage message=new ACLMessage(ACLMessage.INFORM);
+
+                        for (Map.Entry<AID, Integer> p : players.entrySet()){
+                            if(!p.getKey().equals(winner)){
+                                message.addReceiver(p.getKey());
+                                message.setContent(winner.getLocalName()+" is the winner with "+bestResult+" ms");
+                            }
+                            send(message);
+                        }
+                        message=new ACLMessage(ACLMessage.INFORM);
+                        message.setContent("congrats you are the winner ");
+                        message.addReceiver(winner);
+                        send(message);
                         myAgent.removeBehaviour(this);
                         doDelete();
                     }
@@ -49,35 +72,15 @@ public class MasterAgent extends Agent {
             }
 
         });
-        sequentialBehaviour.addSubBehaviour(new Behaviour() {
-            boolean finished=false;
-            @Override
-            public void action() {
-                AID winner=null;
-                int bestResult=0;
-                for (Map.Entry<AID, Integer> p : players.entrySet()) {
-                    System.out.println("Player "+p.getKey()+" score "+p.getValue());
-                    if(p.getValue()>bestResult){
-                        bestResult=p.getValue();
-                        winner=p.getKey();
-                    }
-                }
-                ACLMessage message=new ACLMessage(ACLMessage.INFORM);
-                message.setContent(winner.getName()+" is the winner with "+bestResult+" iteration");
-                for (Map.Entry<AID, Integer> p : players.entrySet()){
-                    message.addReceiver(p.getKey());
-                    if(p.getKey().equals(winner))
-                        message.setContent("congrats you are the winner ");
-                    send(message);
-                }
-                finished=true;
-            }
-
-            @Override
-            public boolean done() {
-                return finished;
-            }
-        });
         addBehaviour(sequentialBehaviour);
+    }
+
+    @Override
+    protected void takeDown() {
+        try {
+            DFService.deregister(this);
+        } catch (FIPAException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

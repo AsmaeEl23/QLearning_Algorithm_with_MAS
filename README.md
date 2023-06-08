@@ -9,9 +9,23 @@
 <br><br><br><br>
 <ol type="I">
 <h2><li >About Algorithm</li></h2>
-<pre>Q(s,a)=Q(s,a)+α(r+γ maxQ(s′,a′)−Q(s,a))</pre>
-
+<h5>Update Q value</h5>
+<img src="images/img.png">
+<pre>
+Q — Q-function
+𝑆𝑡 — current state(observation)
+𝐴𝑡 — current action
+𝑅𝑡+1 — reward received following current action
+𝑆𝑡+1 — next state(observation)
+𝛼 (alpha) — learning rate parameter
+𝛾 (gamma) — discount factor parameter
+𝑚𝑎𝑥𝑎𝑄(𝑆𝑡+1,𝑎) — maximum value for the next state(observation) across the possible action space</pre>
+<img src="images/qlShema.png">
   <h2><li >Sequential implementation </li></h2>
-<ul type="square">
-</ul>
+<h4>Q table 8*8=64 states</h4>
+<img src="images/img_1.png">
+<h4>Final result</h4>
+<img src="images/img_2.png">
+<h2><li >MAS implementation</li></h2>
+<img src="images/img_3.png">
 </ol>

@@ -1,13 +1,12 @@
 package ma.sdia.sma.sequential;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class Qlearning {
     private final double GAMMA=0.9;
     private final double EPS=0.4;
-    private final int MAX_EPOCH=20;
-    private final int GRID_SIZE=4;
+    private final int MAX_EPOCH=100000;
+    private final int GRID_SIZE=8;
     private final int ACTION_SIZE=4;
     private  int[][] grid;
     private  double[][] qTable=new double[GRID_SIZE*GRID_SIZE][ACTION_SIZE];
@@ -27,29 +26,20 @@ public class Qlearning {
                 {-1,0}   //haut
         };
         grid=new int[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, -1, -1, 0},
-                {0, 0, 0, 1},
+                {0,0,0,0,0,0,0,0},
+                {0,0,-1,-1,0,0,0,0},
+                {-1,-1,0,0,0,0,0,0},
+                {0,0,0,0,0,-1,0,0},
+                {0,0,0,0,0,0,-1,0},
+                {0,-1,-1,-1,0,0,0,0},
+                {0,0,0,0,0,0,0,-1},
+                {-1,0,0,0,0,-1,0,1}
         };
-
-        /*grid=new int[][]{
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,1}
-        };*/
     }
 
     private void resetState(){
-        stateI=0;
-        stateJ=0;
+        stateI=1;
+        stateJ=1;
     }
 
     private int chooseAction(double eps){
@@ -92,8 +82,6 @@ public class Qlearning {
             }
             System.out.println("]");
         }
-
-        System.out.println("------------------Use the final Q table------------------");
         resetState();
         while (!isFinished()){
             int act=chooseAction(0);
@@ -124,8 +112,7 @@ public class Qlearning {
         long endTime = System.currentTimeMillis();
         executionTime = endTime - startTime;
 
-        System.out.println("Execution time: " + executionTime + " milliseconds");
-        showResult();
+        //showResult();
     }
 
     public long getExecutionTime() {
